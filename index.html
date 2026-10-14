@@ -3,12 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>诊断</title>
+<title>纯加载测试</title>
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#f5f2ec}
-canvas{display:block}
-#log{position:fixed;left:8px;top:8px;right:8px;background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;font-size:12px;font-family:monospace;z-index:999;border-radius:6px;white-space:pre-wrap;line-height:1.6}
-#log b{color:#4caf50}
+html,body{margin:0;height:100%;background:#f5f2ec;font-family:system-ui;padding:20px;box-sizing:border-box}
+#log{background:#000;color:#0f0;padding:16px;font-size:13px;font-family:monospace;border-radius:8px;white-space:pre-wrap;line-height:1.8;word-break:break-all}
+#log .ok{color:#4caf50}
 #log .err{color:#ff5252}
 </style>
 </head>
@@ -23,144 +22,99 @@ canvas{display:block}
 </script>
 
 <script type="module">
-import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const logEl = document.getElementById('log');
 let lines = [];
-function log(t, isErr) {
-  const line = isErr ? `<span class="err">${t}</span>` : t;
-  lines.push(line);
+function log(t, cls) {
+  const span = cls ? `<span class="${cls}">${t}</span>` : t;
+  lines.push(span);
   logEl.innerHTML = lines.join('<br>');
   console.log(t);
 }
 
-log('1. Three.js 已加载');
+log('测试开始');
+log('不渲染 3D，只测试 chajuzuhe.glb 能否加载完成');
+log('');
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf5f2ec);
-
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.01, 10000);
-camera.position.set(1.5, 1.2, 1.8);
-
-const renderer = new THREE.WebGLRenderer({ antialias:false });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(1);
-document.body.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-
-scene.add(new THREE.AmbientLight(0xffffff, 2));
-const dl = new THREE.DirectionalLight(0xffffff, 3);
-dl.position.set(4, 8, 5);
-scene.add(dl);
-
-log('2. 场景已创建');
-
-/* ============ 加载茶室 ============ */
 const loader = new GLTFLoader();
 
-log('3. 加载 chashi.glb…');
+log('开始加载 chajuzuhe.glb…');
 
-loader.load('./chashi.glb',
+loader.load('./chajuzuhe.glb',
   (gltf) => {
-    log('<b>✓ 4. chashi.glb 加载成功</b>');
+    log('');
+    log('✓ 文件加载成功！', 'ok');
 
-    const model = gltf.scene;
-    let box = new THREE.Box3().setFromObject(model);
-    const maxDim = Math.max(box.getSize(new THREE.Vector3()).x, box.getSize(new THREE.Vector3()).y, box.getSize(new THREE.Vector3()).z);
-    let scale = 1;
-    if (maxDim > 100) scale = 0.001;
-    model.scale.setScalar(scale);
-    scene.add(model);
+    /* 遍历统计，不做任何渲染 */
+    let meshCount = 0;
+    let totalTri = 0;
+    let totalTex = 0;
+    const texSet = new Set();
 
-    box = new THREE.Box3().setFromObject(model);
-    const c = box.getCenter(new THREE.Vector3());
-    controls.target.copy(c);
-    camera.position.set(c.x + 1.5, c.y + 1.2, c.z + 1.8);
-    controls.update();
+    gltf.scene.traverse(o => {
+      if (o.isMesh) {
+        meshCount++;
+        if (o.geometry && o.geometry.index) {
+          totalTri += o.geometry.index.count / 3;
+        }
+        /* 统计贴图 */
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => {
+          if (!m) return;
+          ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap'].forEach(k => {
+            if (m[k] && m[k].image) {
+              if (!texSet.has(m[k].image)) {
+                texSet.add(m[k].image);
+                totalTex++;
+              }
+            }
+          });
+        });
+      }
+    });
 
-    log('5. 茶室已加入场景');
-    log('6. 3 秒后开始加载 chajuzuhe.glb…');
-
-    /* 延迟 3 秒，让茶室先渲染几帧，确认基础没问题 */
-    setTimeout(() => {
-      loadTeaSet();
-    }, 3000);
+    log('');
+    log('【模型统计】');
+    log('  顶层子级数量: ' + gltf.scene.children.length);
+    log('  mesh 总数: ' + meshCount);
+    log('  三角形总数: ' + Math.round(totalTri));
+    log('  贴图总数: ' + totalTex);
+    log('');
+    log('✓ 全部统计完成，没有崩溃', 'ok');
+    log('');
+    log('→ 说明文件本身没问题，是渲染时内存爆了');
   },
   (xhr) => {
     if (xhr.total > 0) {
       const p = Math.round(xhr.loaded / xhr.total * 100);
-      // 更新最后一行进度
-      const idx = lines.length - 1;
-      lines[idx] = `3. 加载 chashi.glb… ${p}% (${Math.round(xhr.loaded/1024/1024)}MB / ${Math.round(xhr.total/1024/1024)}MB)`;
+      const mb = (xhr.loaded / 1024 / 1024).toFixed(1);
+      lines[lines.length - 1] = `加载中… ${p}%  (${mb} MB)`;
+      logEl.innerHTML = lines.join('<br>');
+    } else {
+      lines[lines.length - 1] = `加载中… 已下载 ${(xhr.loaded / 1024 / 1024).toFixed(1)} MB`;
       logEl.innerHTML = lines.join('<br>');
     }
   },
   (err) => {
-    log('✗ chashi.glb 加载失败', true);
+    log('');
+    log('✗ 加载失败！', 'err');
+    log(String(err), 'err');
     console.error(err);
   }
 );
 
-/* ============ 加载茶具 ============ */
-function loadTeaSet() {
-  log('7. 开始加载 chajuzuhe.glb…');
+/* 心跳，看页面是否还活着 */
+let beat = 0;
+setInterval(() => {
+  beat++;
+  document.title = '心跳 ' + beat;
+}, 1000);
 
-  loader.load('./chajuzuhe.glb',
-    (gltf) => {
-      log('<b>✓ 8. chajuzuhe.glb 加载成功</b>');
-      log('   顶层子级数量: ' + gltf.scene.children.length);
-
-      const root = gltf.scene;
-      let box = new THREE.Box3().setFromObject(root);
-      const size0 = box.getSize(new THREE.Vector3());
-      const maxDim = Math.max(size0.x, size0.y, size0.z);
-      let scale = 1;
-      if (maxDim > 100) scale = 0.001;
-      root.scale.setScalar(scale);
-      root.updateMatrixWorld(true);
-
-      /* 单独加到场景，看每个模型 */
-      root.traverse(o => {
-        if (o.isMesh) {
-          const box2 = new THREE.Box3().setFromObject(o);
-          const sz = box2.getSize(new THREE.Vector3());
-          log('   mesh: ' + (o.name || '未命名') + ' 尺寸(' + sz.x.toFixed(2) + ',' + sz.y.toFixed(2) + ',' + sz.z.toFixed(2) + ')');
-        }
-      });
-
-      scene.add(root);
-      log('<b>✓ 9. 茶具已加入场景</b>');
-      log('完成');
-    },
-    (xhr) => {
-      if (xhr.total > 0) {
-        const p = Math.round(xhr.loaded / xhr.total * 100);
-        const idx = lines.length - 1;
-        lines[idx] = `7. 加载 chajuzuhe.glb… ${p}% (${Math.round(xhr.loaded/1024/1024)}MB / ${Math.round(xhr.total/1024/1024)}MB)`;
-        logEl.innerHTML = lines.join('<br>');
-      }
-    },
-    (err) => {
-      log('✗ chajuzuhe.glb 加载失败', true);
-      console.error(err);
-    }
-  );
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
-
-addEventListener('resize', () => {
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+/* 捕获错误 */
+window.addEventListener('error', (e) => {
+  log('');
+  log('✗ 页面出错: ' + e.message, 'err');
 });
 </script>
 </body>
