@@ -259,7 +259,7 @@ camera.position.set(0, 1.5, 3);
 
 const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(1);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = CONFIG.exposure;
@@ -277,6 +277,7 @@ const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 const gtaoPass = new GTAOPass(scene, camera, innerWidth, innerHeight);
 gtaoPass.output = GTAOPass.OUTPUT.Default;
+gtaoPass.enabled = false;
 updateGTAO();
 composer.addPass(gtaoPass);
 composer.addPass(new OutputPass());
@@ -334,7 +335,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, L.ambient); scene.add(ambi
 const keyLight = new THREE.DirectionalLight(0xfff5e8, L.key);
 keyLight.position.set(CONFIG.keyPos.x, CONFIG.keyPos.y, CONFIG.keyPos.z);
 keyLight.castShadow = true;
-keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.mapSize.set(1024, 1024);
 keyLight.shadow.camera.near = 0.1; keyLight.shadow.camera.far = 50;
 keyLight.shadow.bias = -0.0005; keyLight.shadow.radius = 6;
 scene.add(keyLight); scene.add(keyLight.target);
