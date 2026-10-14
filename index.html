@@ -7,15 +7,10 @@
 <style>
 :root{--bg:#f5f2ec;--ink:#2b2620;--ink-2:#6b6259;--gold:#b8935a;--card:rgba(255,255,255,.85);--shadow:0 8px 32px rgba(43,38,32,.12);--gui-width:280px}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;
-  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-  color:var(--ink);background:var(--bg);-webkit-user-select:none;user-select:none;
-  -webkit-touch-callout:none}
-canvas{display:block;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+canvas{display:block}
 body.layout-mobile-landscape{--gui-width:220px}
 body.layout-mobile-portrait{--gui-width:260px}
-
-/* 目录面板 */
 #catalog{background:var(--card);backdrop-filter:blur(20px);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;z-index:10;transition:transform .3s}
 #catalogHeader{padding:16px 18px 14px;border-bottom:1px solid rgba(43,38,32,.08);flex-shrink:0}
 #catalogTitle{font-size:15px;font-weight:600;letter-spacing:.1em;margin-bottom:10px}
@@ -27,7 +22,7 @@ body.layout-mobile-portrait{--gui-width:260px}
 .bc-sep{color:rgba(43,38,32,.3);font-size:10px}
 #backBtn{margin-top:10px;padding:8px 14px;border:0;border-radius:10px;background:rgba(43,38,32,.06);color:var(--ink);font-size:12px;cursor:pointer;display:none;align-items:center;gap:6px}
 #backBtn.show{display:inline-flex}
-#catalogBody{flex:1;overflow-y:auto;padding:14px;touch-action:pan-y}
+#catalogBody{flex:1;overflow-y:auto;padding:14px}
 .item{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:8px;border-radius:12px;cursor:pointer;background:rgba(255,255,255,.5);border:1px solid rgba(43,38,32,.06);position:relative}
 .item:hover{background:#fff;border-color:rgba(184,147,90,.4);transform:translateX(3px)}
 .item-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(184,147,90,.12);color:var(--gold);font-size:16px;flex-shrink:0}
@@ -39,12 +34,10 @@ body.layout-mobile-portrait{--gui-width:260px}
 .item-count{font-size:10px;color:var(--ink-2);margin-top:2px}
 .item-arrow{font-size:14px;color:rgba(43,38,32,.25);flex-shrink:0}
 .item-plus{font-size:18px;color:var(--gold);flex-shrink:0;opacity:.7}
-
 #drawerHandle{display:none;position:relative;height:62px;flex-shrink:0;align-items:center;justify-content:space-between;padding:0 18px;cursor:pointer;border-bottom:1px solid rgba(43,38,32,.06)}
 #drawerHandle .handle-bar{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:40px;height:4px;border-radius:2px;background:rgba(43,38,32,.18)}
 #drawerHandle .handle-text{font-size:14px;font-weight:600}
 #drawerHandle .handle-icon{font-size:14px;color:var(--ink-2);transition:transform .3s}
-
 body.layout-desktop #catalog{position:fixed;left:20px;top:20px;bottom:20px;width:300px;border-radius:18px}
 body.layout-tablet #catalog{position:fixed;left:12px;top:12px;bottom:12px;width:220px;border-radius:14px}
 body.layout-tablet .item{padding:10px 12px;gap:8px}
@@ -56,33 +49,26 @@ body.layout-mobile-portrait #catalogTitle{display:none}
 body.layout-mobile-landscape #catalog{position:fixed;left:8px;top:8px;bottom:8px;width:200px;border-radius:12px}
 body.layout-mobile-landscape .item{padding:8px 10px;gap:6px}
 body.layout-mobile-landscape .item-count{display:none}
-
 #guiToggle{position:fixed;right:0;top:50%;transform:translateY(-50%);width:38px;padding:16px 6px;border:0;border-radius:12px 0 0 12px;background:rgba(43,38,32,.82);color:#fff;font-size:12px;letter-spacing:.15em;writing-mode:vertical-rl;cursor:pointer;z-index:51;transition:.3s}
 #guiToggle.open{transform:translateY(-50%) translateX(calc(-1 * var(--gui-width)));background:rgba(184,147,90,.95)}
-
 .lil-gui.root{position:fixed !important;right:0 !important;top:70px !important;bottom:70px !important;width:var(--gui-width) !important;max-height:none !important;border-radius:14px 0 0 14px !important;overflow-y:auto !important;transition:transform .3s !important;z-index:50 !important;transform:translateX(100%)}
 .lil-gui.root > .title > .close-button{display:none !important}
-
 #historyBtns{position:fixed;right:16px;top:16px;display:flex;flex-direction:column;gap:8px;z-index:100}
 .hist-btn{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border:0;border-radius:13px;cursor:pointer;background:rgba(43,38,32,.82);color:#fff;font-size:20px}
 .hist-btn:disabled{opacity:.3}
 .hist-count{font-size:10px;text-align:center;color:#fff;background:rgba(43,38,32,.6);border-radius:8px;padding:3px 0}
-
 #bottomBar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:10}
 #clearBtn{padding:12px 28px;border:0;border-radius:14px;cursor:pointer;background:var(--ink);color:#fff;font-size:13px;letter-spacing:.15em}
 body.layout-mobile-portrait #bottomBar{bottom:78px}
-
+#diagBtn{position:fixed;right:16px;bottom:16px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(43,38,32,.82);color:#fff;font-size:18px;cursor:pointer;z-index:100;display:none}
 #info{position:fixed;left:50%;top:18px;transform:translateX(-50%);padding:7px 16px;border-radius:99px;background:rgba(43,38,32,.85);color:#fff;font-size:11px;z-index:20;max-width:70vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #info.ok{background:rgba(52,120,80,.9)}
 #info.err{background:rgba(180,60,60,.9)}
-
 #toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.85);color:#fff;padding:10px 22px;border-radius:24px;font-size:12px;z-index:1000;opacity:0;transition:.3s;pointer-events:none}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
 #rotateHint{position:fixed;left:50%;top:12px;transform:translateX(-50%);padding:8px 18px;border-radius:24px;background:rgba(43,38,32,.85);color:#fff;font-size:11px;z-index:100;opacity:0;transition:.5s;pointer-events:none;display:none}
 body.layout-mobile-portrait #rotateHint{display:flex}
 #rotateHint.show{opacity:1}
-
 .lil-gui{--background-color:rgba(255,255,255,.9);--text-color:#2b2620;--title-background-color:rgba(255,255,255,.95);--title-text-color:#2b2620;--widget-color:rgba(43,38,32,.08);--number-color:#b8935a;--string-color:#6b6259;--font-family:"PingFang SC","Microsoft YaHei",sans-serif;--font-size:12px;--title-height:34px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(43,38,32,.14);border:1px solid rgba(255,255,255,.6);border-right:0}
 .lil-gui > .title{background:rgba(255,255,255,.95) !important;color:#2b2620 !important;border-bottom:1px solid rgba(43,38,32,.08)}
 .lil-gui input[type="number"]{color:#b8935a;background:transparent}
@@ -90,9 +76,12 @@ body.layout-mobile-portrait #rotateHint{display:flex}
 .lil-gui button{background:rgba(43,38,32,.06);color:#2b2620}
 .lil-gui .controller.boolean .widget input:checked + .toggle{background:#b8935a !important}
 
-/* DEMO 模式：只展示不激活 */
+/* ★★★ DEMO 模式：禁用所有交互按钮，只保留拖拽 ★★★ */
 body.demo-mode #catalogBody{pointer-events:none;filter:grayscale(.35);opacity:.75}
 body.demo-mode #catalogBody .item{transform:none !important;cursor:default}
+body.demo-mode #backBtn{pointer-events:none;opacity:.5}
+body.demo-mode .lil-gui.root{pointer-events:none}
+body.demo-mode .lil-gui.root .title{opacity:.7}
 body.demo-mode .lil-gui.root .children{opacity:.55}
 body.demo-mode .hist-btn{pointer-events:none;opacity:.35}
 body.demo-mode #clearBtn{pointer-events:none;opacity:.35}
@@ -100,24 +89,6 @@ body.demo-mode #catalog::after{content:'DEMO · 仅供浏览';position:absolute;
 </style>
 </head>
 <body class="layout-desktop demo-mode">
-
-<script>
-  /* 阻止手机下拉刷新、侧滑返回、双击缩放 */
-  document.addEventListener('touchmove', function(e) {
-    if (e.target.closest('#catalogBody') || e.target.closest('.lil-gui')) return;
-    if (e.touches.length > 1) return;
-    e.preventDefault();
-  }, { passive: false });
-  document.addEventListener('gesturestart', (e) => e.preventDefault());
-  document.addEventListener('gesturechange', (e) => e.preventDefault());
-  document.addEventListener('gestureend', (e) => e.preventDefault());
-  let lastTouch = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTouch < 300) e.preventDefault();
-    lastTouch = now;
-  }, { passive: false });
-</script>
 
 <div id="info">加载中…</div>
 <div id="rotateHint">⟳ 横屏观看效果更好</div>
@@ -167,7 +138,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import GUI from 'lil-gui';
 
-/* ============ 目录数据（仅展示） ============ */
+/* ============================================================
+ * 目录数据（仅用于展示，不激活）
+ * ============================================================ */
 const CATALOG = [
   { name:'冲泡器具', children:[
     { name:'茶壶', children:[
@@ -209,26 +182,18 @@ const CATALOG = [
   { name:'装饰艺术品', children:[] }
 ];
 
-/* ============ 配置 ============ */
+/* ============================================================
+ * 配置
+ * ============================================================ */
 const CONFIG = {
   background: 0xf5f2ec,
-  camera: { targetX:0, targetZ:0, targetH:0.85, angle:0, elevation:25, distance:2, fov:40 },
-
+  camera: { targetX:0, targetZ:0, targetH:0.85, angle:0, elevation:20, distance:2, fov:45 },
   envIntensity: 1,
   exposure: 1,
-
-  lights: {
-    hemi: 3,          /* ★ 天光 3 */
-    ambient: 1,
-    key: 3,
-    fill: 1.5,
-    rim: 1
-  },
-
+  lights: { hemi:1, ambient:1, key:3, fill:1.5, rim:1 },
   keyPos:  { x:-4, y:8, z:4 },
   fillPos: { x: 4, y:4, z:5 },
   rimPos:  { x: 0, y:5, z:-6 },
-
   materialBoost: { enabled:true, envMapIntensity:1.5, addClearcoat:true, clearcoat:0.35, clearcoatRoughness:0.10 },
   contactShadow: { enabled:true, radius:0.08, distanceExponent:1.0, thickness:0.5, scale:1.0, samples:16, distanceFallOff:1.0, screenSpaceRadius:false },
   view: { contrast:1.15, brightness:-0.05 },
@@ -251,7 +216,6 @@ function applyLayout() {
 }
 let currentLayout = detectLayout();
 
-/* ============ 场景 ============ */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(CONFIG.background);
 const camera = new THREE.PerspectiveCamera(CONFIG.camera.fov, innerWidth/innerHeight, 0.01, 10000);
@@ -305,7 +269,7 @@ const hdrState = { path:'./backlight.hdr', showBg:false };
 function tryLoadHDRIFromCandidates() {
   let i = 0;
   function next() {
-    if (i >= HDR_CANDIDATES.length) { infoEl.textContent = '✓ 已加载'; infoEl.className = 'ok'; return; }
+    if (i >= HDR_CANDIDATES.length) { infoEl.textContent = '⚠ 未找到 HDRI'; infoEl.className = 'err'; return; }
     const path = HDR_CANDIDATES[i++];
     new RGBELoader().load(path,
       (hdr) => {
@@ -316,7 +280,7 @@ function tryLoadHDRIFromCandidates() {
         if (hdrState.showBg) scene.background = currentEnvTexture;
         hdr.dispose();
         hdrState.path = path;
-        infoEl.textContent = `✓ 已加载`;
+        infoEl.textContent = `✓ HDRI：${path}`;
         infoEl.className = 'ok';
         if (gui) gui.controllersRecursive().forEach(c => c.updateDisplay());
       },
@@ -326,11 +290,9 @@ function tryLoadHDRIFromCandidates() {
   next();
 }
 
-/* ============ 灯光 ============ */
 const L = CONFIG.lights;
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd8c8b0, L.hemi); scene.add(hemiLight);
 const ambientLight = new THREE.AmbientLight(0xffffff, L.ambient); scene.add(ambientLight);
-
 const keyLight = new THREE.DirectionalLight(0xfff5e8, L.key);
 keyLight.position.set(CONFIG.keyPos.x, CONFIG.keyPos.y, CONFIG.keyPos.z);
 keyLight.castShadow = true;
@@ -338,16 +300,13 @@ keyLight.shadow.mapSize.set(2048, 2048);
 keyLight.shadow.camera.near = 0.1; keyLight.shadow.camera.far = 50;
 keyLight.shadow.bias = -0.0005; keyLight.shadow.radius = 6;
 scene.add(keyLight); scene.add(keyLight.target);
-
 const fillLight = new THREE.DirectionalLight(0xffffff, L.fill);
 fillLight.position.set(CONFIG.fillPos.x, CONFIG.fillPos.y, CONFIG.fillPos.z);
 scene.add(fillLight); scene.add(fillLight.target);
-
 const rimLight = new THREE.DirectionalLight(0xffffff, L.rim);
 rimLight.position.set(CONFIG.rimPos.x, CONFIG.rimPos.y, CONFIG.rimPos.z);
 scene.add(rimLight); scene.add(rimLight.target);
 
-/* ============ 相机 ============ */
 let roomSize = null;
 function applyCamera() {
   const C = CONFIG.camera;
@@ -365,7 +324,6 @@ function applyCamera() {
   controls.update();
 }
 
-/* ============ 材质增强 ============ */
 const boostedMaterials = [];
 function boostMaterial(mat) {
   if (!mat) return mat;
@@ -421,12 +379,6 @@ function scanSupports(root) {
     });
   });
   SUPPORTS.sort((a, b) => a.topY - b.topY);
-  console.log('============ 支撑面 ============');
-  SUPPORTS.forEach(s => {
-    const cx = (s.minX + s.maxX) / 2;
-    const cz = (s.minZ + s.maxZ) / 2;
-    console.log(`  ${s.name}: topY=${s.topY.toFixed(3)} 中心=(${cx.toFixed(3)},${cz.toFixed(3)})`);
-  });
 }
 
 function getSupportAt(x, z) {
@@ -544,7 +496,7 @@ function renderCatalog() {
   });
 }
 
-/* ============ 已放物品 ============ */
+/* ============ 已放物品（chajuzuhe.glb 提取的 6 个） ============ */
 const placedItems = [];
 let selectedInstance = null;
 let selectionRing = null;
@@ -657,7 +609,9 @@ function showToast(t) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 1400);
 }
 
-/* ============ 加载 chashi.glb ============ */
+/* ============================================================
+ * 加载 chashi.glb（茶室+桌子，作为背景）
+ * ============================================================ */
 const infoEl = document.getElementById('info');
 
 new GLTFLoader().load('./chashi.glb',
@@ -679,7 +633,6 @@ new GLTFLoader().load('./chashi.glb',
     model.updateMatrixWorld(true);
     scanSupports(model);
 
-    /* ★ 默认相机：近看桌面 */
     const tableSup = getTableSupport();
     if (tableSup) {
       const cx = (tableSup.minX + tableSup.maxX) / 2;
@@ -687,10 +640,8 @@ new GLTFLoader().load('./chashi.glb',
       const w = Math.max(tableSup.maxX - tableSup.minX, tableSup.maxZ - tableSup.minZ);
       CONFIG.camera.targetX = cx;
       CONFIG.camera.targetZ = cz;
-      CONFIG.camera.targetH = tableSup.topY + 0.05;
-      CONFIG.camera.distance = w * 1.2;
-      CONFIG.camera.elevation = 25;
-      CONFIG.camera.fov = 40;
+      CONFIG.camera.targetH = tableSup.topY + 0.15;
+      CONFIG.camera.distance = w * 1.8;
     } else {
       CONFIG.camera.targetH = size2.y * 0.3;
       CONFIG.camera.distance = Math.max(size2.x, size2.z) * 0.7;
@@ -713,6 +664,7 @@ new GLTFLoader().load('./chashi.glb',
     if (CONFIG.materialBoost.enabled) applyMaterialBoost(model);
     tryLoadHDRIFromCandidates();
 
+    /* 茶室加载完成 → 开始加载 chajuzuhe.glb */
     loadChaJuZuHe();
   },
   undefined,
@@ -723,12 +675,15 @@ new GLTFLoader().load('./chashi.glb',
   }
 );
 
-/* ============ 加载 chajuzuhe.glb ============ */
+/* ============================================================
+ * 加载 chajuzuhe.glb（6个茶具）
+ * ============================================================ */
 function loadChaJuZuHe() {
   new GLTFLoader().load('./chajuzuhe.glb',
     (gltf) => {
       const root = gltf.scene;
 
+      /* 单位判断 */
       let box = new THREE.Box3().setFromObject(root);
       const size0 = box.getSize(new THREE.Vector3());
       const maxDim = Math.max(size0.x, size0.y, size0.z);
@@ -738,20 +693,27 @@ function loadChaJuZuHe() {
       root.scale.setScalar(scale);
       root.updateMatrixWorld(true);
 
+      /* 更新 root 的世界矩阵 */
+      root.updateMatrixWorld(true);
+
+      /* ★ 提取每个顶层子级作为独立可拖拽模型 */
       const children = [...root.children];
       console.log('chajuzuhe.glb 顶层子级数量:', children.length);
 
       children.forEach((child, index) => {
+        /* 跳过没有几何体的空节点 */
         let hasMesh = false;
         child.traverse(c => { if (c.isMesh) hasMesh = true; });
         if (!hasMesh) return;
 
+        /* 算世界变换 */
         child.updateMatrixWorld(true);
         const worldPos = new THREE.Vector3();
         const worldQuat = new THREE.Quaternion();
         const worldScale = new THREE.Vector3();
         child.matrixWorld.decompose(worldPos, worldQuat, worldScale);
 
+        /* 从 root 拆出来，加到 scene */
         root.remove(child);
         child.position.copy(worldPos);
         child.quaternion.copy(worldQuat);
@@ -759,13 +721,18 @@ function loadChaJuZuHe() {
         scene.add(child);
         child.updateMatrixWorld(true);
 
+        /* 算包围盒和半径 */
         const box2 = new THREE.Box3().setFromObject(child);
         const csize = box2.getSize(new THREE.Vector3());
         const hRadius = Math.max(csize.x, csize.z) / 2;
         const radius = hRadius * CONFIG.interaction.chajuzuheRadiusScale;
 
+        /* 开启阴影 */
         child.traverse(o => {
-          if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+          if (o.isMesh) {
+            o.castShadow = true;
+            o.receiveShadow = true;
+          }
         });
 
         placedItems.push({
@@ -776,7 +743,7 @@ function loadChaJuZuHe() {
           name: child.name || `茶具${index + 1}`
         });
 
-        console.log(`  [${index}] ${child.name || '未命名'} 位置(${worldPos.x.toFixed(3)},${worldPos.y.toFixed(3)},${worldPos.z.toFixed(3)}) 半径=${radius.toFixed(3)}`);
+        console.log(`  [${index}] ${child.name || '未命名'}  位置(${worldPos.x.toFixed(3)},${worldPos.y.toFixed(3)},${worldPos.z.toFixed(3)}) 半径=${radius.toFixed(3)}`);
       });
 
       console.log(`✓ chajuzuhe.glb 加载完成，共 ${placedItems.length} 个模型`);
@@ -785,6 +752,7 @@ function loadChaJuZuHe() {
       infoEl.className = 'ok';
       showToast(`已加载 ${placedItems.length} 件茶具，可拖动`);
 
+      /* 材质增强 */
       if (CONFIG.materialBoost.enabled) applyMaterialBoost();
     },
     undefined,
@@ -796,10 +764,14 @@ function loadChaJuZuHe() {
   );
 }
 
-/* ============ GUI（仅展示） ============ */
+/* ============================================================
+ * GUI（仅展示，禁用）
+ * ============================================================ */
 const gui = new GUI({ title:'场景调节' });
-function addSlider(folder, obj, key, min, max, step, name) {
-  return folder.add(obj, key, min, max, step).name(name);
+function addSlider(folder, obj, key, min, max, step, name, onChange) {
+  const c = folder.add(obj, key, min, max, step).name(name);
+  if (onChange) c.onChange(onChange);
+  return c;
 }
 
 const fCam = gui.addFolder('相机');
@@ -839,7 +811,9 @@ function setGuiOpen(o) {
 }
 guiToggle.addEventListener('click', () => setGuiOpen(!guiOpen));
 
-/* ============ 渲染 ============ */
+/* ============================================================
+ * 渲染
+ * ============================================================ */
 function animate() { requestAnimationFrame(animate); controls.update(); composer.render(); }
 animate();
 
@@ -862,11 +836,7 @@ function onResize() {
   }, 150);
 }
 addEventListener('resize', onResize);
-let orientationTimer = null;
-addEventListener('orientationchange', () => {
-  clearTimeout(orientationTimer);
-  orientationTimer = setTimeout(onResize, 300);
-});
+addEventListener('orientationchange', () => setTimeout(onResize, 250));
 
 const rotateHint = document.getElementById('rotateHint');
 function updateRotateHint() {
